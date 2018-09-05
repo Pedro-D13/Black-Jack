@@ -8,10 +8,14 @@ from pick import pick
 
 from itertools import cycle
 
+
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
+
 """Create a class that is able to have a few attributes hand, player"""
+
+
 class Deck:
     """class that creates the deck"""
     """We set the numbers and suits that are able to be will be in the game"""
@@ -51,11 +55,11 @@ class Deck:
         print(f"There are {num_of_players} players playing ")
         Deck.deal(self, num_of_players)
 
-    def deal(self,num_of_players):
+    def deal(self, num_of_players):
         Deck.shuffling(self)
         players_dict = {}
         for num in range(num_of_players):
-            dicts= {f"hand{num+1}":[]}
+            dicts = {f"hand{num+1}": []}
             players_dict.update(dicts)
         while len(players_dict['hand1']) < 7:
             try:
@@ -66,10 +70,10 @@ class Deck:
             except (AttributeError, KeyError):
                 continue
         setattr(self, 'players_dict', players_dict)
-        
+
 
 class Play(Deck):
-    def __init__(self,deck):
+    def __init__(self, deck):
         self.deck_of_cards = deck
         self.hands = deck.players_dict
         self.players = list(deck.players_dict.keys())
@@ -95,7 +99,8 @@ class Play(Deck):
         answered = False
         while answered is not True:
             try:
-                answer = int(input("\n Which player would of dealt the cards: "))
+                answer = int(
+                    input("\n Which player would of dealt the cards: "))
                 if answer < 1 or answer > len(self.players):
                     raise ValueError
                 else:
@@ -104,24 +109,27 @@ class Play(Deck):
                     break
             except ValueError:
                 clear()
-                print(f"Please, input a valid number between 1 and {len(self.players)}")
+                print(
+                    f"Please, input a valid number between 1 and {len(self.players)}")
             else:
                 clear()
                 break
-    
+
     def ask(self):
-        print('\n',f"it's Player {self.turn[-1]}'s turn")
+        print('\n', f"it's Player {self.turn[-1]}'s turn")
         x = self.turn
         while x and len(self.players) > 1:
             try:
-                print("\n", f"{self.in_play[-1]} - is the current card in play", "\n")
+                print(
+                    "\n", f"{self.in_play[-1]} - is the current card in play", "\n")
                 print("""- input (V) to view your card(s)
 - input (P) to pick up a card
 - Hit (Enter) to play a card""")
                 hand = input(": ")
                 if hand.upper() == "V":
                     clear()
-                    print(f"Player{self.turn[-1]}'s' hand:", self.hands[f"{self.turn}"],"\n")
+                    print(f"Player{self.turn[-1]}'s' hand:",
+                          self.hands[f"{self.turn}"], "\n")
                 elif hand.upper() == "P":
                     Play.pick_up(self)
                     Play.next_players_turn(self)
@@ -130,23 +138,25 @@ class Play(Deck):
                         Logic.__init__(self)
                 else:
                     raise ValueError
-            except ValueError: 
+            except ValueError:
                 print("Please input a value from the below options")
         if len(self.players) < 2:
             print(f"{self.turn} losess")
             #Break out of the game
 
-    def pick_up(self):        
+    def pick_up(self):
         for _ in range(1):
             self.hands[f"{self.turn}"].append(deck.deck.pop(0))
         Play.next_players_turn(self)
+
 
 class Logic(Play):
 
     def __init__(self):
         self.card_type = {
             "standard_cards": {'3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '9': 9, '10': 10},
-            "power_cards": {'Ace': {"1": 1, "14": 14}, '2': 2, '8': 8, 'Jack': 11, 'Queen': 12, 'King': 13},
+            "power_cards": {'Ace': [1, Logic.change_suit], '2': [2, Logic.pick_up], '8': [8, Logic.miss_a_go],
+                            'Jack': [11, (Logic.pick_up, Logic.cancel_pick_up)], 'Queen': [12, Logic.cover], 'King': [13, Logic.reverse]},
             "order": {"Ace": 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
                       '9': 9, '10': 10, 'Jack': 11, 'Queen': 12, 'King': 13}
         }
@@ -157,7 +167,7 @@ class Logic(Play):
         self.no_mistakes = False
         self.looping = True
         Logic.pick_cards(self)
-        
+
     def pick_cards(self):
         self.cards_to_play = ''
         if self.first_card:
@@ -165,7 +175,8 @@ class Logic(Play):
         while len(self.cards_to_play) > 0 and self.no_mistakes is False:
             cards_to_play = pick(
                 self.hands[self.turn],
-                title=(f"{self.turn[-1]}'s turn: current card in play is: {self.in_play[-1]}"),
+                title=(
+                    f"{self.turn[-1]}'s turn: current card in play is: {self.in_play[-1]}"),
                 multi_select=True,
                 min_selection_count=0
             )
@@ -192,31 +203,80 @@ class Logic(Play):
             card_in_play = (self.in_play[-1])
             card_in_play = str(card_in_play)
             card_in_play_value, card_in_play_suit = card_in_play.split(' of ')
-            to_be_played_value, to_be_played_suit = self.cards_to_play[0][0].split(" of ")
-            Logic.match(self,card_in_play_suit,card_in_play_value,to_be_played_suit,to_be_played_value)
+            to_be_played_value, to_be_played_suit = self.cards_to_play[0][0].split(
+                " of ")
+            Logic.match(self, card_in_play_suit, card_in_play_value,
+                        to_be_played_suit, to_be_played_value)
 
     def match(self, *args):
-        card_in_play_suit, card_in_play_value, to_be_played_suit, to_be_played_value = args    
-        if card_in_play_suit == to_be_played_suit or card_in_play_value == to_be_played_value:
+        card_in_play_suit, card_in_play_value, to_be_played_suit, to_be_played_value = args
+        pdb.set_trace()
+        if to_be_played_value in self.card_type['power_cards'].keys():
+            Logic.is_power_card(self, *args)
+        elif card_in_play_suit == to_be_played_suit or card_in_play_value == to_be_played_value:
             Logic.play_card_from_hand(self)
         elif card_in_play_suit != to_be_played_suit or card_in_play_value != to_be_played_value:
             Logic.pick_up_two_for_mistake(self)
 
-    def play_card_from_hand(self):
+    def play_card_from_hand(self, *args):
         card_to_be_removed = self.cards_to_play.pop(0)
-        self.in_play.append(card_to_be_removed[0])
+        if args:
+            self.in_play.append(args[0])
+        else:
+            self.in_play.append(card_to_be_removed[0])
         self.hands[f"{self.turn}"].remove(card_to_be_removed[0])
         Logic.run(self)
-        
+
     def run(self):
         self.first_card = False
-        
+
     def pick_up_two_for_mistake(self):
         for _ in range(2):
             self.hands[f'{self.turn}'].append(deck.deck.pop(0))
-        print(f"{self.cards_to_play[0][-1]} cannot go on {self.in_play[-1]}")
+        print(f"{self.cards_to_play[0][0]} cannot go on {self.in_play[-1]}")
         self.no_mistakes = True
-        
+
+    def is_power_card(self, *args):
+        card_in_play_suit, card_in_play_value, to_be_played_suit, to_be_played_value = args
+        function_call = self.card_type['power_cards'][f'{to_be_played_value}'][1]
+        if to_be_played_value == "Jack":
+            if to_be_played_suit == 'hearts' or to_be_played_suit == "diamonds":
+                function_call[1](self, *args)
+            elif to_be_played_suit == 'spades' or to_be_played_suit == "clubs":
+                function_call[0](self, *args)
+        else:
+            function_call(self, *args)
+
+    def change_suit(self, *args):
+        card_in_play_suit, card_in_play_value, to_be_played_suit, to_be_played_value = args
+        pdb.set_trace()
+        changing_suit = pick(
+            self.suits, title=f"What suit would you like to change too,current suit: {card_in_play_suit}",
+            indicator=">>",
+            min_selection_count=1
+        )
+        new_card = to_be_played_value + ' of ' + changing_suit[0]
+        print(new_card)
+        Logic.play_card_from_hand(self, new_card)
+
+    def miss_a_go(self, *args):
+        pass
+
+    def pick_up(self, *args):
+        pass
+
+    def cancel_pick_up(self, *args):
+        pass
+
+    def cover(self, *args):
+        pass
+
+    def reverse(self, *args):
+        pass
+
+# Use decorators to pass functions such as increase the pot by two
+
+
 deck = Deck()
 deck.create_deck()
 deck.shuffling()
