@@ -11,10 +11,8 @@ from itertools import cycle
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
-"""Create a class that is able to have a few attributes hand, player"""
 class Deck:
-    """class that creates the deck"""
-    """We set the numbers and suits that are able to be will be in the game"""
+    """Generates a deck of cards, using class variables , numbers and suits"""
     numbers = [
         'Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10',
         'Jack', 'Queen', 'King'
@@ -35,6 +33,7 @@ class Deck:
         return self.deck
 
     def num_of_players(self):
+        """ Asks how many players will be playing and calls the deal method"""
         num_of_players = None
         while num_of_players is None:
             print("Black Jack is a 2-4 player game")
@@ -52,6 +51,7 @@ class Deck:
         Deck.deal(self, num_of_players)
 
     def deal(self,num_of_players):
+        """Deals out cards depending on the num_of_players"""
         Deck.shuffling(self)
         players_dict = {}
         for num in range(num_of_players):
@@ -69,6 +69,7 @@ class Deck:
         
 
 class Play(Deck):
+    """ Class defines the game loop, of playing cards and switching turns"""
     def __init__(self,deck):
         self.deck_of_cards = deck
         self.hands = deck.players_dict
@@ -79,6 +80,7 @@ class Play(Deck):
         self.saved = []
 
     def players_turn_generator(self):
+        """ Method which uses Generators to create players turns"""
         saved = []
         for element in self.players:
             yield element
@@ -88,10 +90,12 @@ class Play(Deck):
                 yield element
 
     def next_players_turn(self):
+        """Method that calles the players_turn_generator and generates the next players turn"""
         self.turn = next(playing)
         Play.ask(self)
 
     def start(self):
+        """starting player will be the player after the dealer """
         answered = False
         while answered is not True:
             try:
@@ -110,6 +114,7 @@ class Play(Deck):
                 break
     
     def ask(self):
+        """ Player option to either play card from hand, see their hand or pick up a card"""
         print('\n',f"it's Player {self.turn[-1]}'s turn")
         x = self.turn
         while x and len(self.players) > 1:
@@ -136,14 +141,15 @@ class Play(Deck):
             print(f"{self.turn} losess")
             #Break out of the game
 
-    def pick_up(self):        
+    def pick_up(self):
+        """ Pick up One card from the self.deck_of_cards """        
         for _ in range(1):
             self.hands[f"{self.turn}"].append(deck.deck.pop(0))
         Play.next_players_turn(self)
 
 class Logic(Play):
-
     def __init__(self):
+
         self.card_type = {
             "standard_cards": {'3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '9': 9, '10': 10},
             "power_cards": {'Ace': {"1": 1, "14": 14}, '2': 2, '8': 8, 'Jack': 11, 'Queen': 12, 'King': 13},
