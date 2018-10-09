@@ -119,7 +119,7 @@ class Play(Deck):
         x = self.turn
         while x and len(self.players) > 1:
             try:
-                print("\n", f"{self.in_play[-1]} - is the current card in play", "\n")
+                print('- - ' * 12,"\n" ,f"{self.in_play[-1]} - is the current card in play", "\n")
                 print("""- input (V) to view your card(s)
 - input (P) to pick up a card
 - Hit (Enter) to play a card""")
@@ -138,7 +138,7 @@ class Play(Deck):
             except ValueError: 
                 print("Please input a value from the below options")
         if len(self.players) < 2:
-            print(f"{self.turn} losess")
+            print(f"{self.turn} loses")
             #Break out of the game
 
     def pick_up(self):
@@ -149,7 +149,6 @@ class Play(Deck):
 
 class Logic(Play):
     def __init__(self):
-
         self.card_type = {
             "standard_cards": {'3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '9': 9, '10': 10},
             "power_cards": {'Ace': {"1": 1, "14": 14}, '2': 2, '8': 8, 'Jack': 11, 'Queen': 12, 'King': 13},
@@ -175,7 +174,6 @@ class Logic(Play):
                 multi_select=True,
                 min_selection_count=0
             )
-            print(self.in_play[-1])
             if len(cards_to_play) == 0:
                 try:
                     prompt = input("end turn without playing? (y/n)").lower()
@@ -190,7 +188,6 @@ class Logic(Play):
             else:
                 setattr(self, "cards_to_play", cards_to_play)
                 Logic.suits_values(self)
-
         Play.next_players_turn(self)
 
     def suits_values(self):
@@ -213,16 +210,22 @@ class Logic(Play):
         self.in_play.append(card_to_be_removed[0])
         self.hands[f"{self.turn}"].remove(card_to_be_removed[0])
         Logic.run(self)
-        
+        pdb.set_trace()
+
     def run(self):
         self.first_card = False
         
     def pick_up_two_for_mistake(self):
         for _ in range(2):
             self.hands[f'{self.turn}'].append(deck.deck.pop(0))
-        print(f"{self.cards_to_play[0][-1]} cannot go on {self.in_play[-1]}")
+        print(" \n")
+        print("*" * 12)
+        print(f"Player {self.turn}, {self.cards_to_play[0][-1]} cannot go on {self.in_play[-1]}")
         self.no_mistakes = True
-        
+        print("*" * 12)
+        print(" \n ")
+
+
 deck = Deck()
 deck.create_deck()
 deck.shuffling()
