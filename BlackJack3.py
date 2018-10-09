@@ -213,7 +213,6 @@ class Logic(Play):
         self.hands[f"{self.turn}"].remove(card_to_be_removed[0])
         Logic.run(self)
         
-
     def run(self):
         self.first_card = False
         
@@ -226,7 +225,6 @@ class Logic(Play):
         self.no_mistakes = True
         print("*" * 30)
         print(" \n ")
-
 
 deck = Deck()
 deck.create_deck()
