@@ -92,6 +92,7 @@ class Play(Deck):
     def next_players_turn(self):
         """Method that calles the players_turn_generator and generates the next players turn"""
         self.turn = next(playing)
+        print('- - ' * 12, "\n")
         Play.ask(self)
 
     def start(self):
@@ -115,15 +116,16 @@ class Play(Deck):
     
     def ask(self):
         """ Player option to either play card from hand, see their hand or pick up a card"""
-        print('\n',f"it's Player {self.turn[-1]}'s turn")
+        print(f"it's Player {self.turn[-1]}'s turn")
         x = self.turn
         while x and len(self.players) > 1:
             try:
-                print('- - ' * 12,"\n" ,f"{self.in_play[-1]} - is the current card in play", "\n")
+                print(f"{self.in_play[-1]} - is the current card in play", "\n")
                 print("""- input (V) to view your card(s)
 - input (P) to pick up a card
-- Hit (Enter) to play a card""")
+- Hit (Enter) to play a card(s) """)
                 hand = input(": ")
+                print('- - ' * 12,"\n")
                 if hand.upper() == "V":
                     clear()
                     print(f"Player{self.turn[-1]}'s' hand:", self.hands[f"{self.turn}"],"\n")
@@ -210,7 +212,7 @@ class Logic(Play):
         self.in_play.append(card_to_be_removed[0])
         self.hands[f"{self.turn}"].remove(card_to_be_removed[0])
         Logic.run(self)
-        pdb.set_trace()
+        
 
     def run(self):
         self.first_card = False
@@ -219,10 +221,10 @@ class Logic(Play):
         for _ in range(2):
             self.hands[f'{self.turn}'].append(deck.deck.pop(0))
         print(" \n")
-        print("*" * 12)
-        print(f"Player {self.turn}, {self.cards_to_play[0][-1]} cannot go on {self.in_play[-1]}")
+        print("*" * 30)
+        print(f"Player {self.turn[-1]}, {self.cards_to_play[0][0]} cannot go on {self.in_play[-1]}")
         self.no_mistakes = True
-        print("*" * 12)
+        print("*" * 30)
         print(" \n ")
 
 
