@@ -153,7 +153,9 @@ class Logic(Play):
     def __init__(self):
         self.card_type = {
             "standard_cards": {'3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '9': 9, '10': 10},
-            "power_cards": {'Ace': {"1": 1, "14": 14}, '2': 2, '8': 8, 'Jack': 11, 'Queen': 12, 'King': 13},
+            "power_cards": {'Ace': (1, Logic.change_suit), '2': (2, Logic.pick_up), '8': (8, Logic.miss_a_go),
+                            'Jack': (11, (Logic.pick_up, Logic.cancel_pick_up)), 'Queen': (12, Logic.cover), 
+                            'King': (13, Logic.reverse) },
             "order": {"Ace": 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
                       '9': 9, '10': 10, 'Jack': 11, 'Queen': 12, 'King': 13}
         }
@@ -207,7 +209,7 @@ class Logic(Play):
         elif card_in_play_suit != to_be_played_suit or card_in_play_value != to_be_played_value:
             Logic.pick_up_two_for_mistake(self)
 
-    def play_card_from_hand(self):
+    def play_card_from_hand(self, *args):
         card_to_be_removed = self.cards_to_play.pop(0)
         self.in_play.append(card_to_be_removed[0])
         self.hands[f"{self.turn}"].remove(card_to_be_removed[0])
@@ -225,6 +227,45 @@ class Logic(Play):
         self.no_mistakes = True
         print("*" * 30)
         print(" \n ")
+
+
+    def is_power_card(self, args):
+        to_be_played_suit, to_be_played_value = args[2:4]
+        function_call = self.card_type['power_cards'][f'{to_be_played_value}'][-1]
+        if to_be_played_value == "Jack":
+            if to_be_played_suit == "hearts" or to_be_played_suit == "diamonds":
+                function_call[-1](self, *args)
+            elif to_be_played_suit == "spades" or to_be_played_suit == "clubs":
+                function_call[-2](self, *args)
+        else:
+            function_call(self, *args)
+
+    def change_suit(self, args):
+        card_in_play_suit, to_be_played_value = args[0],[3]
+        pdb.set_trace()
+        changing_suit = pick(
+            self.suits, title=f"What suit would you like to change too,current suit: {card_in_play_suit}",
+            indicator=">>",
+            min_selection_count=1
+        )
+        new_card = to_be_played_value + ' of ' + changing_suit[0]
+        print(new_card)
+        Logic.play_card_from_hand(self, new_card)
+
+    def miss_a_go(self, *args):
+        pass
+
+    def pick_up(self, *args):
+        pass
+
+    def cancel_pick_up(self, *args):
+        pass
+
+    def cover(self, *args):
+        pass
+
+    def reverse(self, *args):
+        pass
 
 deck = Deck()
 deck.create_deck()
